@@ -13,6 +13,24 @@
 #include "read_data_macro.hpp"
 #include "route_opt_macro.hpp"
 
+#include "InputOutput.h"
+#include "Instancia.h"
+#include "ConstrutivoBin.h"
+#include "Construtivo.h"
+#include "AuxT.h"
+#include "rand.h"
+#include "Ig.h"
+#include "BinPackingCP.h"
+
+using namespace InstanciaNS;
+using namespace ConstrutivoBinNS;
+using namespace SolucaoNS;
+using namespace RandNs;
+using namespace ParseInputNS;
+using namespace ConstrutivoNS;
+using namespace IgNs;
+using namespace BinPackingCP_NS;
+
 namespace RouteOpt::Application::CVRP {
     void CVRP_ReadDataController::generateInstancePath(int argc, char *argv[]) {
         int n = READ_NO_LINE;
@@ -224,7 +242,16 @@ namespace RouteOpt::Application::CVRP {
         }
     }
 
+    // TODO Ponto para criar instancia
     void CVRP_ReadDataController::parseCVRPSolver() {
+
+        std::cout<<"Inst: "<<f_name_ref.get()<<"\n";
+        std::string nameInst = f_name_ref.get();
+        nameInst = nameInst.substr(0, nameInst.find_last_of(".")) + ".txt";
+        std::cout<<"Inst packing: "<<nameInst<<"\n\n";
+        ParseInputNS::input.strInst = ParseInputNS::getNomeInstancia(nameInst);
+        InstanciaNS::leInstancia(nameInst);
+
         std::string line, name, tmp_string, tmp_string_2;
         while (std::getline(file, line)) {
             std::istringstream iss(line);
