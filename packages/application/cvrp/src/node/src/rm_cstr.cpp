@@ -81,6 +81,7 @@ namespace RouteOpt::Application::CVRP {
     }
 
     void BbNode::findNonActiveCuts(std::vector<double> &optional_optimal_dual, std::vector<int> &cstr_index) {
+        optional_optimal_dual = std::vector<double>();
         if (if_terminate) return;
         std::vector<int> nonactive_cuts;
         std::vector<double> current_dual_vec;

@@ -15,7 +15,9 @@
 #include "bucket.hpp"
 #include "pricing_macro.hpp"
 #include "cuts_definition.hpp"
-
+#include "node.hpp"
+#include "VetorHash.h"
+#include "Instancia.h"
 
 namespace RouteOpt::Application::CVRP {
     using VecLabel = std::pair<std::vector<Label *>, int>;
@@ -78,7 +80,7 @@ namespace RouteOpt::Application::CVRP {
         void initializeOnceB4WholePricing();
 
         template<bool if_symmetry>
-        int generateColumnsByExact(double time_limit);
+        int generateColumnsByExact(double time_limit, BbNode *node);
 
         template<bool if_symmetry>
         void adjustResourceMeetPointInPricing();
@@ -86,7 +88,7 @@ namespace RouteOpt::Application::CVRP {
         void setTerminateMarker(double val, double ub, bool &if_terminate);
 
         template<bool if_symmetry, PRICING_LEVEL pricing_level>
-        int generateColumnsByHeuristic();
+        int generateColumnsByHeuristic(BbNode *node);
 
         //getters
 
@@ -319,6 +321,12 @@ namespace RouteOpt::Application::CVRP {
         ~CVRP_Pricing() {
             freeMemory();
         }
+
+    
+        // Keeps the itens that can and can not be packing
+        std::unordered_set<NS_Igor_HashVector::HashVector, NS_Igor_HashVector::HashFunc> ig_hashPacking;
+        std::unordered_set<NS_Igor_HashVector::HashVector, NS_Igor_HashVector::HashFunc> ig_hashNoPacking;
+
 
     private:
         //private
@@ -617,7 +625,7 @@ namespace RouteOpt::Application::CVRP {
         void sortLabelsInBinByRC(int i, int b);
 
         template<bool dir, bool if_last_half, bool if_complete, bool if_symmetry, PRICING_LEVEL heuristic_level>
-        void runLabeling(double time_limit);
+        void runLabeling(double time_limit, BbNode *node);
 
         template<bool dir, bool if_symmetry, bool if_reset_label_point, bool if_clear_all, bool if_clear_concatenate>
         void initializeLabels();

@@ -8,9 +8,11 @@
 #ifndef ROUTE_OPT_HEURISTIC_LABELING_HPP
 #define ROUTE_OPT_HEURISTIC_LABELING_HPP
 
+#include "node.hpp"
+
 namespace RouteOpt::Application::CVRP {
     template<bool if_symmetry, PRICING_LEVEL pricing_level>
-    int CVRP_Pricing::generateColumnsByHeuristic() {
+    int CVRP_Pricing::generateColumnsByHeuristic(BbNode *node) {
         if (pricing_level == PRICING_LEVEL::HEAVY) {
             num_col_generated_ub = MaxNumRoutesInHeavierHeur;
         } else if (pricing_level == PRICING_LEVEL::LIGHT) {
@@ -20,14 +22,14 @@ namespace RouteOpt::Application::CVRP {
         }
 
         if_exact_cg_finished = false;
-        runLabeling<true, false, false, if_symmetry, pricing_level>(std::numeric_limits<float>::max());
+        runLabeling<true, false, false, if_symmetry, pricing_level>(std::numeric_limits<float>::max(), node);
         if (if_short_memory) {
             THROW_RUNTIME_ERROR("Lack of memory even for heuristic labeling");
         }
 
         if (!if_symmetry) {
             if_exact_cg_finished = false;
-            runLabeling<false, false, false, if_symmetry, pricing_level>(std::numeric_limits<float>::max());
+            runLabeling<false, false, false, if_symmetry, pricing_level>(std::numeric_limits<float>::max(), node);
             if (if_short_memory) {
                 THROW_RUNTIME_ERROR("Lack of memory even for heuristic labeling");
             }

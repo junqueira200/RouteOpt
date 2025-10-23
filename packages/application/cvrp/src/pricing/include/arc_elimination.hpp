@@ -58,16 +58,16 @@ namespace RouteOpt::Application::CVRP {
         if constexpr (!if_symmetry) {
             concatenatePhaseInArcElimination<true, false>();
             if (!if_arc_elimination_succeed) goto QUIT;
-            runLabeling<true, true, false, false, PRICING_LEVEL::EXACT>(arc_elimination_time);
+            runLabeling<true, true, false, false, PRICING_LEVEL::EXACT>(arc_elimination_time, nullptr);
             if (!if_exact_labeling_finished) goto QUIT;
             concatenatePhaseInArcElimination<false, false>();
             if (!if_arc_elimination_succeed) goto QUIT;
-            runLabeling<false, true, false, false, PRICING_LEVEL::EXACT>(arc_elimination_time);
+            runLabeling<false, true, false, false, PRICING_LEVEL::EXACT>(arc_elimination_time, nullptr);
             if (!if_exact_labeling_finished) goto QUIT;
         } else {
             concatenatePhaseInArcElimination<true, true>();
             if (!if_arc_elimination_succeed) goto QUIT;
-            runLabeling<true, true, false, true, PRICING_LEVEL::EXACT>(arc_elimination_time);
+            runLabeling<true, true, false, true, PRICING_LEVEL::EXACT>(arc_elimination_time, nullptr);
             if (!if_exact_labeling_finished) goto QUIT;
         }
     QUIT:

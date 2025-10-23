@@ -383,16 +383,16 @@ namespace RouteOpt::Application::CVRP {
             t_pricing = TimeSetter::measure([&]() {
                 switch (cg_mode) {
                     case PRICING_LEVEL::LIGHT:
-                        ccnt = pricing_controller.generateColumnsByHeuristic<if_symmetry, PRICING_LEVEL::LIGHT>();
+                        ccnt = pricing_controller.generateColumnsByHeuristic<if_symmetry, PRICING_LEVEL::LIGHT>(node);
                         break;
                     case PRICING_LEVEL::HEAVY:
-                        ccnt = pricing_controller.generateColumnsByHeuristic<if_symmetry, PRICING_LEVEL::HEAVY>();
+                        ccnt = pricing_controller.generateColumnsByHeuristic<if_symmetry, PRICING_LEVEL::HEAVY>(node);
                         break;
                     case PRICING_LEVEL::EXACT:
                         pricing_controller.refNumColGeneratedUB() = if_last_cg_type
                                                                         ? MaxNumRoutesInExactPricingLow
                                                                         : MaxNumRoutesInExactPricingHigh;
-                        ccnt = pricing_controller.generateColumnsByExact<if_symmetry>(time_limit);
+                        ccnt = pricing_controller.generateColumnsByExact<if_symmetry>(time_limit, node);
                         if (!if_fix_meet_point) pricing_controller.adjustResourceMeetPointInPricing<if_symmetry>();
                         pricing_controller.setTerminateMarker(prior_value, ub, node->refIfTerminate());
                         break;

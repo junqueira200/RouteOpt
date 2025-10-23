@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(cvrp VERSION 3.0)
 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -15,8 +15,17 @@ if (ENABLE_VALGRIND_MEM_CHECK)
     add_compile_definitions(VALGRIND_MEM_CHECK)
 endif ()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D __FILENAME__='\"$$(subst  ${CMAKE_SOURCE_DIR}/,,$$(abspath $$<))\"'")
+
+
+add_definitions(-DVAR_VECTOR_SANITY_CHECK=1)
+message("set vector_sanity_check=1")
+
+add_definitions(-DVAR_SOLUTION_BORROW_CHECKER=1)
+message("set solution_borrow_checker=1")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../external external_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../common common_build)
@@ -28,6 +37,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../deluxing deluxing_build)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake_modules")
 find_package(HGS REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(ortools CONFIG REQUIRED)
 
 # Find the required packages of the external
 include_directories(
@@ -88,4 +98,5 @@ target_link_libraries(${PROJECT_NAME}
         ${XGB_LIBRARIES}
         ${HGS_LIBRARIES}
         ZLIB::ZLIB
+        ortools::ortools
 )

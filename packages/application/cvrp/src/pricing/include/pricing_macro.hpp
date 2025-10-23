@@ -17,7 +17,7 @@ namespace RouteOpt::Application::CVRP {
     constexpr double HardTimeThresholdInArcEliminationMidConcatenate = std::numeric_limits<float>::max();
     constexpr double ArcEliminationTimeIncreased = std::numeric_limits<float>::max();
     constexpr double HardTimeThresholdInAllEnumeration = std::numeric_limits<float>::max();
-    constexpr int LABEL_ASSIGN = 80000;
+    constexpr int LABEL_ASSIGN = 1000000;
 #else
     constexpr double CutGenTimeThresholdInPricingInitial = 6;
     constexpr double TailOffHardTime = 60;
@@ -26,7 +26,7 @@ namespace RouteOpt::Application::CVRP {
     constexpr double HardTimeThresholdInArcEliminationMidConcatenate = 5;
     constexpr double ArcEliminationTimeIncreased = 20;
     constexpr double HardTimeThresholdInAllEnumeration = 50;
-    constexpr int LABEL_ASSIGN = 8000000;
+    constexpr int LABEL_ASSIGN = 1000000;
 #endif
 
 

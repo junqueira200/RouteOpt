@@ -15,6 +15,7 @@ namespace RouteOpt::Application::CVRP {
     int BbNode::node_idx_counter{};
     sparseRowMatrixXd BbNode::row_basic_matrix{};
 
+    // todo cria modelo
     void BbNode::buildModel(int num_vehicle, int dim, Solver *solver, BbNode *node) {
         BbNode::dim = dim;
         node->if_root_node = true;

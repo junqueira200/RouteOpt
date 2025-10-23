@@ -14,9 +14,91 @@
 #include "cvrp_pricing_controller.hpp"
 
 
+#include "InputOutput.h"
+#include "Instancia.h"
+#include "ConstrutivoBin.h"
+#include "Construtivo.h"
+#include "AuxT.h"
+#include "rand.h"
+#include "Ig.h"
+#include "BinPackingCP.h"
+#include "VetorHash.h"
+#include "GlobalVariables.h"
+
+using namespace InstanciaNS;
+using namespace ConstrutivoBinNS;
+using namespace SolucaoNS;
+using namespace RandNs;
+using namespace ParseInputNS;
+using namespace ConstrutivoNS;
+using namespace IgNs;
+using namespace BinPackingCP_NS;
+using namespace NS_GloabalVar;
+using namespace RouteOpt::Application::CVRP;
+
+
+inline void IG_addCstr(const sparseRowMatrixXd &mat, std::vector<char> &sense,
+                            std::vector<double> &rhs, RouteOpt::Solver &solver) {
+            size_t nz = mat.nonZeros();
+            std::vector<size_t> solver_beg(mat.rows() + 1);
+            std::vector<int> solver_ind(nz + sense.size());
+            std::vector<double> solver_val(nz + sense.size());
+
+            nz = 0;
+            solver_beg[0] = 0;
+            for (int k = 0; k < mat.outerSize(); ++k) {
+                sparseRowMatrixXd::InnerIterator it(mat, k);
+                if (it) {
+                    if (RouteOpt::equalFloat(rhs[k], 0)) {
+                        if (it.col() != 0) {
+                            solver_ind[nz] = static_cast<int>(it.col());
+                            solver_val[nz] = it.value();
+                            ++nz;
+                        }
+                    } else {
+                        solver_ind[nz] = 0;
+                        solver_val[nz] = rhs[k];
+                        ++nz;
+                        if (it.col() != 0) {
+                            solver_ind[nz] = static_cast<int>(it.col());
+                            solver_val[nz] = it.value();
+                            ++nz;
+                        }
+                    }
+                }
+
+                ++it;
+
+                for (; it; ++it) {
+                    solver_ind[nz] = static_cast<int>(it.col());
+                    solver_val[nz] = it.value();
+                    ++nz;
+                }
+                solver_beg[k + 1] = nz;
+            }
+
+            solver_ind.resize(nz);
+            solver_val.resize(nz);
+
+
+            SAFE_SOLVER(solver.XaddConstraints(
+                mat.rows(),
+                nz,
+                solver_beg.data(),
+                solver_ind.data(),
+                solver_val.data(),
+                sense.data(),
+                rhs.data(),
+                nullptr
+            ))
+            SAFE_SOLVER(solver.updateModel())
+
+}
+
+
 namespace RouteOpt::Application::CVRP {
     template<bool dir, bool if_last_half, bool if_complete, bool if_symmetry, PRICING_LEVEL pricing_level>
-    void CVRP_Pricing::runLabeling(double time_limit) {
+    void CVRP_Pricing::runLabeling(double time_limit, BbNode *node) {
         if_stop_arc_elimination = pricing_level != PRICING_LEVEL::EXACT;
         if_exact_labeling_cg = pricing_level == PRICING_LEVEL::EXACT;
         if_exact_labeling_finished = pricing_level == PRICING_LEVEL::EXACT;
@@ -130,6 +212,145 @@ namespace RouteOpt::Application::CVRP {
                 std::cout << "num_dominance_checks= " << num_dominance_checks << std::endl;
             }
         }
+
+        // TODO: Chamar o bin packing aqui!
+        const std::vector<SequenceInfo>& vet = getNewCols();
+        bool cutAdd = false;
+
+        for(auto seqInfo:vet)
+        {
+            std::bitset<200> cust = 0;
+            for(auto cli:seqInfo.col_seq)
+            {
+                //std::cout<<cli<<" ";
+                cust[cli] = true;
+            }
+
+            VectorI vetItens;
+            VectorI vetCust;
+            double wight = 0.0;
+            vetItens.reserve(10);
+
+            for(int i=1; i < 200; ++i)
+            {
+                if(cust[i] == false)
+                    continue;
+                vetCust.push_back(i);
+                int ini = instanciaG.matCliItensIniFim(i, 0);
+                int fim = instanciaG.matCliItensIniFim(i, 1);
+
+                if(fim > instanciaG.numItens)
+                {
+                    std::cout<<"Error!";
+                    std::cout<<"Num de itens errado!\n";
+                    PRINT_DEBUGG("", "");
+                    throw "ERROR";
+                }
+
+                for(int item=ini; item <= fim; ++item)
+                {
+                    vetItens.push_back(item);
+                    wight += InstanciaNS::instanciaG.vetItens[item].peso;
+                }
+            }
+
+            //std::cout<<"\n";
+            std::sort(vetItens.begin(), vetItens.end());
+            NS_Igor_HashVector::HashVector hashV(vetItens);
+
+            bool callPacking = true;
+            bool packaged    = false;
+
+            //Ig_BitSet bitSet = 0;
+            //ig_createBitSet(vetCust, bitSet);
+
+            if(ig_hashPacking.count(hashV) == 0)
+            {
+                if(ig_hashNoPacking.count(hashV) == 1)
+                {
+                    callPacking = false;
+                    // ADD CUT!
+                }
+                else
+                    callPacking = true;
+
+            }
+            else
+            {
+                callPacking = false;
+                packaged    = true;
+            }
+
+            /*
+            if(callPacking)
+            {
+                callPacking = false;
+                callPacking = !ig_packingChecking(bitSet, wight);
+                if(!callPacking)
+                {	std::cout<<"bit set ajudou!\n\n";
+                    addAcertoBitSet(vetItens.size());
+                }
+
+            }
+            */
+
+            if(callPacking)
+            {
+                packaged = binPacking(vetItens, vetItens.size());
+                //std::cout<<"call packing!\n";
+                if(packaged)
+                {
+                    ig_hashPacking.insert(hashV);
+                    //ig_vetRoutes.push_back(std::vector<int>());
+                    //std::vector<int>& vetI = ig_vetRoutes[ig_vetRoutes.size()-1];
+                    //for(int item:vetItens)
+                    //    vetI.push_back(item);
+
+                    addAcerto(vetItens.size());
+                    //ig_addBitSet(bitSet, wight);
+                }
+                else
+                {
+                    ig_hashNoPacking.insert(hashV);
+                    addErro(vetItens.size());
+                    // Add a rcc cut
+
+                    if(node)
+                    {
+                    cutAdd = true;
+                    std::cout<<"Starting cut route: "<<vetCust<<"\n";
+                    RCCs::Rcc rcc;
+                    for(int cust:vetCust)
+                        rcc.info_rcc_customer.push_back(cust);
+
+
+                    rcc.if_keep = true;
+                    rcc.rhs = vetCust.size() - 1;
+                    rcc.form_rcc = (int)RCCs::RCCForm::RCC_FORM_1;
+
+                    std::vector<RCCs::Rcc> vetRcc;
+                    std::vector<double> rhs;
+                    rhs.push_back(vetCust.size()-1);
+
+                    std::vector<char> sense;
+                    sense.push_back(SOLVER_LESS_EQUAL);
+
+
+                    vetRcc.push_back(rcc);
+                    sparseRowMatrixXd matRccCoef;
+                    RCCs::CoefficientGetter::RCCCoefficientController::
+                    getCoefficientRCC(node->getCols(), vetRcc, false, matRccCoef);
+
+                    IG_addCstr(matRccCoef, sense, rhs, node->refSolver());
+
+                    std::cout<<"Route cuted: "<<vetCust<<"\n\n";
+                    SAFE_SOLVER(node->refSolver().reoptimize(SOLVER_DUAL_SIMPLEX));
+                    }
+
+                }
+            }
+        }
+
     }
 
     template<bool if_symmetry>

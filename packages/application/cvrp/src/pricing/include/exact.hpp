@@ -9,13 +9,14 @@
 #define ROUTE_OPT_EXACT_HPP
 #include "pricing_macro.hpp"
 #include "../../main/include/cvrp_macro.hpp"
+#include "node.hpp"
 
 namespace RouteOpt::Application::CVRP {
     template<bool if_symmetry>
-    int CVRP_Pricing::generateColumnsByExact(double time_limit) {
+    int CVRP_Pricing::generateColumnsByExact(double time_limit, BbNode *node) {
         int ccnt = 0;
     RE_TRY:
-        runLabeling<true, false, false, if_symmetry, PRICING_LEVEL::EXACT>(time_limit);
+        runLabeling<true, false, false, if_symmetry, PRICING_LEVEL::EXACT>(time_limit, node);
 
         if (if_short_memory) {
             reallocateLabel();
@@ -28,7 +29,7 @@ namespace RouteOpt::Application::CVRP {
 
         if (!if_symmetry) {
         RE_TRY2:
-            runLabeling<false, false, false, if_symmetry, PRICING_LEVEL::EXACT>(time_limit);
+            runLabeling<false, false, false, if_symmetry, PRICING_LEVEL::EXACT>(time_limit, node);
 
             if (if_short_memory) {
                 reallocateLabel();

@@ -179,8 +179,10 @@ namespace RouteOpt::Application::CVRP {
 
         void initSolver();
 
-    private:
         Solver solver{};
+
+    private:
+        //Solver solver{};
         int num_vehicle{}, max_num_vehicle{};
         int dim{};
         std::vector<double> demand{};
