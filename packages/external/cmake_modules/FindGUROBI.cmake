@@ -1,6 +1,6 @@
 # FindGUROBI.cmake
 
-set(GUROBI_ROOT "/home/igor/gurobi1200/linux64/")
+set(GUROBI_ROOT "/root/gurobi1203/armlinux64/")
 
 if (EXISTS "${GUROBI_ROOT}")
     set(GUROBI_FOUND TRUE)

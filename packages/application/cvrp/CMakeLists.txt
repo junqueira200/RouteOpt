@@ -33,6 +33,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../branching branching_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../rounded_cap_cuts rcc_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../rank1_cuts rank1_cuts_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../deluxing deluxing_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../3L-VehicleRouting 3L-VehicleRouting_build)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake_modules")
 find_package(HGS REQUIRED)
@@ -93,7 +94,8 @@ target_link_libraries(${PROJECT_NAME}
         ROUNDED_CAP_CUTS_INCLUDES
         RANK1_CUTS_INCLUDES
         DELUXING_INCLUDES
-        ${GUROBI_LIBRARIES}
+        THREE_L_VRP_INCLUDES
+	${GUROBI_LIBRARIES}
         ${CVRPSEP_LIBRARIES}
         ${XGB_LIBRARIES}
         ${HGS_LIBRARIES}

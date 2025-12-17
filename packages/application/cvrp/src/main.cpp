@@ -17,11 +17,15 @@
 #include "vrptw.hpp"               // VRPTW solver header.
 #include "cvrp_macro.hpp"          // Macros specific to CVRP.
 #include "bbt_controller.hpp"      // Branch-and-bound tree controller.
+#include "../../3L-VehicleRouting/3L-VehicleRoutingApplication.h"
+
 using namespace std;
 using namespace RouteOpt;
 using namespace Application::CVRP;
 
 int main(int argc, char *argv[]) {
+
+    return main3L(argc, argv);
     // Create an instance of the solver based on the application type.
     // If the application type is CVRP, create a CVRPSolver; otherwise, create a VRPTW solver.
 
