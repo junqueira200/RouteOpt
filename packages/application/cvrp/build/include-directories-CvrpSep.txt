@@ -1,0 +1,3 @@
+/root/gurobi1203/armlinux64/include
+/root/Documentos/RouteOpt/packages/3L-VehicleRouting/CvrpSep/src
+/root/Documentos/RouteOpt/packages/3L-VehicleRouting/CvrpSep/include

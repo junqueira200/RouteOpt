@@ -1,0 +1,77 @@
+cmake_minimum_required(VERSION 3.18)
+
+project(3L-VehicleRouting VERSION 0.9 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# include(GNUInstallDirs)
+
+# After a normal build, we can specify the location of various outputs of the
+# build. We put executables and static libraries in the build directory in
+# bin/ and lib/, respectively.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
+if(UNIX)
+    set(ORTOOLS_ROOT "${ORTOOLS_ROOT_UNIX}")
+    set(BOOST_ROOT "${BOOST_ROOT_UNIX}")
+    set(GUROBI_DIR "${GUROBI_ROOT_UNIX}")
+else()
+    set(ORTOOLS_ROOT "${ORTOOLS_ROOT_WIN}")
+    set(BOOST_ROOT "${BOOST_ROOT_WIN}")
+    set(GUROBI_DIR "${GUROBI_ROOT_WIN}")
+endif()
+
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${ORTOOLS_ROOT})
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${BOOST_ROOT})
+message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
+
+# OR-Tools has only a Release lib
+if(CXX AND MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+    add_compile_options(/MD)
+endif()
+
+# Build Dependencies
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(Boost REQUIRED) # COMPONENTS graph dynamic_bitset property_map) # REQUIRED COMPONENTS graph dynamic_bitset property_map
+find_package(GUROBI REQUIRED)
+include_directories(${GUROBI_INCLUDE_DIRS})
+find_package(ortools CONFIG REQUIRED)
+if(${BOOST_FOUND})
+	message(STATUS "Boost_FOUND: ${Boost_FOUND}")
+	message(STATUS "Boost version: ${Boost_VERSION}")
+	message(STATUS "Boost include: ${Boost_INCLUDE_DIR}")
+else()
+	message(FATAL_ERROR "Boost not found")
+endif()
+
+file(GLOB APP_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
+file(GLOB APP_SOURCES_H CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+file(GLOB APP_SOURCES2 CONFIGURE_DEPENDS
+	"${CMAKE_CURRENT_SOURCE_DIR}/external/cvrpsep/*.cpp"
+)
+
+file(GLOB APP_SOURCES2H CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/cvrpsep/*.h"
+)
+
+message("Files: ${APP_SOURCES_H}")
+
+add_executable(${PROJECT_NAME} ${APP_SOURCES} ${APP_SOURCES_H}  ${APP_SOURCES2} ${APP_SOURCES2H})
+
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+	${CMAKE_SOURCE_DIR}/external
+	${Boost_INCLUDE_DIR}
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE gurobi_c++ gurobi ortools::ortools)
+
+

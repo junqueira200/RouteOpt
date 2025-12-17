@@ -1,0 +1,178 @@
+{
+  "BranchAndCutParams": {
+    "ActivateHeuristic": false,
+    "ActivateIntraRouteImprovement": false,
+    "ActivateMemoryManagement": false,
+    "ActivateSetPartHeur": true,
+    "CutSeparationMaxNodes": 4294967295,
+    "CutSeparationStartNodes": 200,
+    "CutSeparationThreshold": 100,
+    "EnableMinVehicleLifting": true,
+    "IntraRouteFullEnumThreshold": 0,
+    "MinVehicleLiftingThreshold": 0.5,
+    "SetPartHeurThreshold": 20,
+    "SimpleVersion": true,
+    "StartSolution": "None",
+    "TimeLimit": [
+      [
+        "ReversePath",
+        1.0
+      ],
+      [
+        "MinInfPath",
+        1.0
+      ],
+      [
+        "RegularPath",
+        1.0
+      ],
+      [
+        "MinInfSet",
+        1.0
+      ],
+      [
+        "TwoPath",
+        4.0
+      ],
+      [
+        "Heuristic",
+        0.0
+      ],
+      [
+        "ExactLimit",
+        1.0
+      ],
+      [
+        "Exact",
+        1.7976931348623157e+308
+      ]
+    ]
+  },
+  "CPSolverParams": {
+    "EnableCumulativeDimensions": false,
+    "EnableNoOverlap2DFloor": false,
+    "LogFlag": true,
+    "Seed": 0,
+    "Threads": 8
+  },
+  "LoadingProblemParams": {
+    "ProblemVariant": "AllConstraints",
+    "SupportArea": 0.75
+  },
+  "MIPSolverParams": {
+    "CutGeneration": -1,
+    "DisablePreCrush": 1,
+    "EnableLazyConstraints": 1,
+    "NumericFocus": 0,
+    "Seed": 100.0,
+    "SolutionLimit": 2147483647,
+    "Threads": 8,
+    "TimeLimit": 43200.0
+  },
+  "UserCutParams": {
+    "EpsForIntegrality": 1e-05,
+    "MaxCutsAdd": [
+      [
+        "CAT",
+        10
+      ],
+      [
+        "DKplus",
+        10
+      ],
+      [
+        "DKminus",
+        10
+      ],
+      [
+        "SCI",
+        10
+      ],
+      [
+        "FCI",
+        50
+      ],
+      [
+        "GLM",
+        1
+      ],
+      [
+        "MSTAR",
+        50
+      ],
+      [
+        "RCC",
+        100
+      ]
+    ],
+    "MaxCutsSeparate": [
+      [
+        "CAT",
+        10
+      ],
+      [
+        "DKplus",
+        10
+      ],
+      [
+        "DKminus",
+        10
+      ],
+      [
+        "SCI",
+        0
+      ],
+      [
+        "FCI",
+        100
+      ],
+      [
+        "GLM",
+        1
+      ],
+      [
+        "MSTAR",
+        100
+      ],
+      [
+        "RCC",
+        200
+      ]
+    ],
+    "MaxViolationCutLazy": 0.5,
+    "ViolationThreshold": [
+      [
+        "CAT",
+        0.01
+      ],
+      [
+        "DKplus",
+        0.01
+      ],
+      [
+        "DKminus",
+        0.01
+      ],
+      [
+        "SCI",
+        0.01
+      ],
+      [
+        "FCI",
+        0.01
+      ],
+      [
+        "GLM",
+        0.01
+      ],
+      [
+        "MSTAR",
+        0.01
+      ],
+      [
+        "RCC",
+        0.01
+      ]
+    ]
+  }
+}
